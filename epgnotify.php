@@ -33,6 +33,7 @@ function readConfig(){
 		fwrite($file,"[mail]\n");
 		fwrite($file,"mail_address=\"".getenv('USER')."@".getenv('HOSTNAME')."\"\n");
 		fwrite($file,"\n");
+		fwrite($file,"global['epgfile']=\"/etc/vdr/epg.data\"\n");
 	}
 	$config_user=parse_ini_file(getenv('HOME')."/.epgnotify.ini");
 	
@@ -69,130 +70,137 @@ if (file_exists(getenv('HOME')."/.epgnotify.cache")) {
 	$cache = array();
 }
 
-# open epg database from vdr
-$file=fopen($config['global']['epgfile'],"r");
+# read and process egpfile if exists
+if (file_exists($config['global']['epgfile'])) {
+	# open epg database from vdr
+	$file=fopen($config['global']['epgfile'],"r");
 
-$hit=false; # helper variable; indicates if currently processed program is noteworthy to store
-$programCount=0; # counter for newly found programs
-$eventIDCount=0; # counter for found event IDs in epg data
+	$hit=false; # helper variable; indicates if currently processed program is noteworthy to store
+	$programCount=0; # counter for newly found programs
+	$eventIDCount=0; # counter for found event IDs in epg data
 
-# read epg data line per line; see http://www.vdr-wiki.de/wiki/index.php/Epg.data
-while (!feof($file)) {
-	# read next line (is of format X data1 data2 ...)
-	$line=fgets($file);
-	
-	# optionally: encoding convertion (some stations send their data in a different encoding as they say they do)
-	#$line=mb_convert_encoding($line,'ISO-8859-9','ISO-8859-15');
+	# read epg data line per line; see http://www.vdr-wiki.de/wiki/index.php/Epg.data
+	while (!feof($file)) {
+		# read next line (is of format X data1 data2 ...)
+		$line=fgets($file);
+		
+		# optionally: encoding convertion (some stations send their data in a different encoding as they say they do)
+		#$line=mb_convert_encoding($line,'ISO-8859-9','ISO-8859-15');
 
-	# switch line identifier (first character of line)
-	switch (substr($line,0,1)) {
-		case "E":
-			#new program
-			unset($program);
-			# reset hit indicator at beginning of a new program description
-			$hit=false;
-			# read program data
-			list($program['eventID'], $program['startTime'], $program['duration'], $program['TableID'])=sscanf(substr($line,2),"%s %s %s %s");
-			# startTime is in time_t format; convert to human readable format
-			$program['startTime']=date("D M j G:i:s T Y",intval($program['startTime']));
-			# store eventIDs for later purging the cache
-			$eventID[$eventIDCount]=$program['eventID'];
-			$eventIDCount=$eventIDCount+1;
-			break;
-			
-		case "T":
-			# read program's title
-			$program['title']=substr($line,2,strlen($line)-3);
-			# search for matching string in title
-			foreach ($config['title'] as $search) {
-				# skip empty strings (these are placeholders in config file)
-				if (strlen($search)>0) {
-					if (!(stripos($program['title'],$search) === false)){
-						$hit=true;
-						$program['hitT']=$search;
+		# switch line identifier (first character of line)
+		switch (substr($line,0,1)) {
+			case "E":
+				#new program
+				unset($program);
+				# reset hit indicator at beginning of a new program description
+				$hit=false;
+				# read program data
+				list($program['eventID'], $program['startTime'], $program['duration'], $program['TableID'])=sscanf(substr($line,2),"%s %s %s %s");
+				# startTime is in time_t format; convert to human readable format
+				$program['startTime']=date("D M j G:i:s T Y",intval($program['startTime']));
+				# store eventIDs for later purging the cache
+				$eventID[$eventIDCount]=$program['eventID'];
+				$eventIDCount=$eventIDCount+1;
+				break;
+				
+			case "T":
+				# read program's title
+				$program['title']=substr($line,2,strlen($line)-3);
+				# search for matching string in title
+				foreach ($config['title'] as $search) {
+					# skip empty strings (these are placeholders in config file)
+					if (strlen($search)>0) {
+						if (!(stripos($program['title'],$search) === false)){
+							$hit=true;
+							$program['hitT']=$search;
+						}
 					}
 				}
-			}
-			break;
-			
-		case "S":
-			# read program's short description
-			$program['short']=substr($line,2,strlen($line)-3);
-			# search for matching string in short description
-			foreach ($config['shortText'] as $search) {
-				# skip empty strings (these are placeholders in config file)
-				if (strlen($search)>0) {
-					if (!(stripos($program['title'],$search) === false)){
-						$hit=true;
-						$program['hitS']=$search;
+				break;
+				
+			case "S":
+				# read program's short description
+				$program['short']=substr($line,2,strlen($line)-3);
+				# search for matching string in short description
+				foreach ($config['shortText'] as $search) {
+					# skip empty strings (these are placeholders in config file)
+					if (strlen($search)>0) {
+						if (!(stripos($program['title'],$search) === false)){
+							$hit=true;
+							$program['hitS']=$search;
+						}
 					}
 				}
-			}
-			break;
-			
-		case "D":
-			# read programs's description
-			$program['description']=substr($line,2,strlen($line)-3);
-			# search for matching string in  description
-			foreach ($config['description'] as $search) {
-				# skip empty strings (these are placeholders in config file)
-				if (strlen($search)>0) {
-					if (!(stripos($program['description'],$search) === false)){
-						$hit=true;
-						$program['hitD']=$search;
+				break;
+				
+			case "D":
+				# read programs's description
+				$program['description']=substr($line,2,strlen($line)-3);
+				# search for matching string in  description
+				foreach ($config['description'] as $search) {
+					# skip empty strings (these are placeholders in config file)
+					if (strlen($search)>0) {
+						if (!(stripos($program['description'],$search) === false)){
+							$hit=true;
+							$program['hitD']=$search;
+						}
 					}
 				}
-			}
-			break;
-			
-		case "e":
-			# end of currently progessed program 
-			# check if search algorithm had a hit
-			if ($hit==true) {
-				# check if was already sent
-				$cached=false;
-				foreach ($cache as $cached_program) {
-					if ($program==$cached_program) {
-						$cached=true;
-						break;
+				break;
+				
+			case "e":
+				# end of currently processed program 
+				# check if search algorithm had a hit
+				if ($hit==true) {
+					# check if was already sent
+					$cached=false;
+					foreach ($cache as $cached_program) {
+						if ($program==$cached_program) {
+							$cached=true;
+							break;
+						}
+					}
+					# if notification wasn't already sent, append to the new program list
+					if (!$cached) {
+						$programSave[$programCount]=$program;
+						$programCount=$programCount+1;
 					}
 				}
-				# if notification wasn't already sent, append to the new program list
-				if (!$cached) {
-					$programSave[$programCount]=$program;
-					$programCount=$programCount+1;
-				}
-			}
-			break;
-	}
-}
-fclose($file);
-	
-# check if new programs that matches the search filter were found
-if (isset($programSave)) {
-	# mail newly found programs to user's mail address
-	$mail_success=mail($config['mail_address'], "epgnotify found ".count($programSave)." new programs for you" , print_r($programSave,true));
-	# add newly found programs to cached list
-	$cache=array_merge($programSave,$cache);
-
-}
-
-# purge cache (loop every program in cache of sent notifications and remove that ones that are not in the epg data any more)
-for ($i=0; $i<count($cache); $i++) {
-	$found=false;
-	foreach ($eventID as $evtID) {
-		if ($cache[$i]['eventID']==$evtID){
-			$found=true;
-			break;
+				break;
 		}
 	}
-	if (!$found) {
-		unset($cache[$i]);
+	fclose($file);
+		
+	# check if new programs that matches the search filter were found
+	if (isset($programSave)) {
+		# mail newly found programs to user's mail address
+		$mail_success=mail($config['mail_address'], "epgnotify found ".count($programSave)." new programs for you" , print_r($programSave,true));
+		# add newly found programs to cached list
+		$cache=array_merge($programSave,$cache);
+
 	}
+
+	# purge cache (loop every program in cache of sent notifications and remove that ones that are not in the epg data any more)
+	for ($i=0; $i<count($cache); $i++) {
+		$found=false;
+		foreach ($eventID as $evtID) {
+			if ($cache[$i]['eventID']==$evtID){
+				$found=true;
+				break;
+			}
+		}
+		if (!$found) {
+			unset($cache[$i]);
+		}
+	}
+	# reduce indicess (not leave an empty index back)
+	$cache=array_merge($cache); 
+	# save cache
+	file_put_contents(getenv('HOME')."/.epgnotify.cache",serialize($cache));
+
+} else {
+  # write a mail if epg.file does not exists
+  mail($config['mail_address'], "epgnotify error, no epg data found", "Dear User,\n Unfortunately the epg data file ".$config['global']['epgfile']." as specified in ".getenv('HOME')."/.epgnotify.ini"." could not be opened for reading. Please check if the file exists and is readable.");
 }
-# reduce indicess (not leave an empty index back)
-$cache=array_merge($cache); 
-# save cache
-file_put_contents(getenv('HOME')."/.epgnotify.cache",serialize($cache));
 
 ?>
