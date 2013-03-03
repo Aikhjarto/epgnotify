@@ -76,7 +76,6 @@ if (file_exists($config['global']['epgfile'])) {
 	$file=fopen($config['global']['epgfile'],"r");
 
 	$hit=false; # helper variable; indicates if currently processed program is noteworthy to store
-	$programCount=0; # counter for newly found programs
 	$eventIDCount=0; # counter for found event IDs in epg data
 
 	# read epg data line per line; see http://www.vdr-wiki.de/wiki/index.php/Epg.data
@@ -95,24 +94,24 @@ if (file_exists($config['global']['epgfile'])) {
 				# reset hit indicator at beginning of a new program description
 				$hit=false;
 				# read program data
-				list($program['eventID'], $program['startTime'], $program['duration'], $program['TableID'])=sscanf(substr($line,2),"%s %s %s %s");
+				list($program['info']['eventID'], $program['info']['startTime'], $program['info']['duration'], $program['info']['TableID'])=sscanf(substr($line,2),"%s %s %s %s");
 				# startTime is in time_t format; convert to human readable format
-				$program['startTime']=date("D M j G:i:s T Y",intval($program['startTime']));
+				$program['info']['startTime']=date("D M j G:i:s T Y",intval($program['info']['startTime']));
 				# store eventIDs for later purging the cache
-				$eventID[$eventIDCount]=$program['eventID'];
+				$eventID[$eventIDCount]=$program['info']['eventID'];
 				$eventIDCount=$eventIDCount+1;
 				break;
 				
 			case "T":
 				# read program's title
-				$program['title']=substr($line,2,strlen($line)-3);
+				$program['info']['title']=substr($line,2,strlen($line)-3);
 				# search for matching string in title
 				foreach ($config['title'] as $search) {
 					# skip empty strings (these are placeholders in config file)
 					if (strlen($search)>0) {
-						if (!(stripos($program['title'],$search) === false)){
+						if (!(stripos($program['info']['title'],$search) === false)){
 							$hit=true;
-							$program['hitT']=$search;
+							$program['match']['hitT']=$search;
 						}
 					}
 				}
@@ -120,14 +119,14 @@ if (file_exists($config['global']['epgfile'])) {
 				
 			case "S":
 				# read program's short description
-				$program['short']=substr($line,2,strlen($line)-3);
+				$program['info']['short']=substr($line,2,strlen($line)-3);
 				# search for matching string in short description
 				foreach ($config['shortText'] as $search) {
 					# skip empty strings (these are placeholders in config file)
 					if (strlen($search)>0) {
-						if (!(stripos($program['title'],$search) === false)){
+						if (!(stripos($program['info']['title'],$search) === false)){
 							$hit=true;
-							$program['hitS']=$search;
+							$program['match']['hitS']=$search;
 						}
 					}
 				}
@@ -135,14 +134,14 @@ if (file_exists($config['global']['epgfile'])) {
 				
 			case "D":
 				# read programs's description
-				$program['description']=substr($line,2,strlen($line)-3);
+				$program['info']['description']=substr($line,2,strlen($line)-3);
 				# search for matching string in  description
 				foreach ($config['description'] as $search) {
 					# skip empty strings (these are placeholders in config file)
 					if (strlen($search)>0) {
-						if (!(stripos($program['description'],$search) === false)){
+						if (!(stripos($program['info']['description'],$search) === false)){
 							$hit=true;
-							$program['hitD']=$search;
+							$program['match']['hitD']=$search;
 						}
 					}
 				}
@@ -155,15 +154,14 @@ if (file_exists($config['global']['epgfile'])) {
 					# check if was already sent
 					$cached=false;
 					foreach ($cache as $cached_program) {
-						if ($program==$cached_program) {
+						if ($program['info']==$cached_program['info']) {
 							$cached=true;
 							break;
 						}
 					}
 					# if notification wasn't already sent, append to the new program list
 					if (!$cached) {
-						$programSave[$programCount]=$program;
-						$programCount=$programCount+1;
+						$programSave[]=$program;
 					}
 				}
 				break;
@@ -184,7 +182,7 @@ if (file_exists($config['global']['epgfile'])) {
 	for ($i=0; $i<count($cache); $i++) {
 		$found=false;
 		foreach ($eventID as $evtID) {
-			if ($cache[$i]['eventID']==$evtID){
+			if ($cache[$i]['info']['eventID']==$evtID){
 				$found=true;
 				break;
 			}
