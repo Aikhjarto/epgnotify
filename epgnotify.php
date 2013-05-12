@@ -47,7 +47,7 @@ function readConfig(){
 		$config_global=parse_ini_file("/etc/epgnotify/global.ini");
 	}
 	else {
-		$config_global['global']['epgfile']="/etc/vdr/epg.data";
+		$config_global['global']['epgfile']="/var/cache/vdr/epg.data";
 	}
 	
 	# merge both configs
