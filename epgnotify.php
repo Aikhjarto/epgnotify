@@ -26,6 +26,8 @@ function readConfig(){
 		fwrite($file,";title[]=\"2 Fast\"\n");
 		fwrite($file,";title[]=\"Ö3\"\n");
 		fwrite($file,";title[]=\"Musik\"\n");
+		fwrite($file,";title[]=\"Sherlock\"\n");		
+		fwrite($file,";title[]=\"Sherlock Yack\"\n");
 		fwrite($file,"title[]=\"\"\n");
 		fwrite($file,"shortText[]=\"\"\n");
 		fwrite($file,"description[]=\"\"\n");
@@ -39,6 +41,7 @@ function readConfig(){
 	
 	# consider bad config (something unset)
 	if (!isset($config_user['title'])) {$config_user['title'][0]="";}
+	if (!isset($config_user['notitle'])) {$config_user['notitle'][0]="";}
 	if (!isset($config_user['shortText'])) {$config_user['shortText'][0]="";}
 	if (!isset($config_user['description'])) {$config_user['description'][0]="";}
 
@@ -108,11 +111,16 @@ if (file_exists($config['global']['epgfile'])) {
 				# search for matching string in title
 				foreach ($config['title'] as $search) {
 					# skip empty strings (these are placeholders in config file)
-					if (strlen($search)>0) {
-						if (!(stripos($program['info']['title'],$search) === false)){
-							$hit=true;
-							$program['match']['hitT']=$search;
-						}
+					if (strlen($search)>0 && !(stripos($program['info']['title'],$search) === false)) {
+                                                $hit=true;
+						foreach ($config['notitle'] as $nosearch) {
+						        if (strlen($nosearch)>0 && !(stripos($program['info']['title'],$nosearch) === false)) {
+						                $hit=false;
+                                                        }
+                                                }
+                                                if ($hit == true) {
+	        				        $program['match']['hitT']=$search;
+                                                }
 					}
 				}
 				break;
