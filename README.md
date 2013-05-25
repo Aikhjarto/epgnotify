@@ -1,11 +1,11 @@
 epgnotify
 =========
-It is a simple email notification for upcomming programs. It reads epg.data created by vdr (compatible with vdr 1.7) an sends a mails on a per user basis if newly added programs match certain search tags.
+It is a simple email notification for upcomming programs. It reads epg.data created by vdr (compatible with vdr 1.7 and 2.0) an sends a mails on a per user basis if newly added programs match certain search tags.
 
 Prerequisties
 =============
-() vdr 1.7 (might work with 1.6 but its not confirmed)
-() php parses
+() vdr 2.0 or 1.7 (might work with 1.6 but its not confirmed)
+() php parser
 
 
 Installation
