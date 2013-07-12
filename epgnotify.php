@@ -28,6 +28,7 @@ function readConfig(){
 		fwrite($file,";title[]=\"Musik\"\n");
 		fwrite($file,";title[]=\"Sherlock\"\n");		
 		fwrite($file,";title[]=\"Sherlock Yack\"\n");
+		fwrite($file,";titleExact[]=\"Super\"\n");
 		fwrite($file,"title[]=\"\"\n");
 		fwrite($file,"shortText[]=\"\"\n");
 		fwrite($file,"description[]=\"\"\n");
@@ -122,6 +123,12 @@ if (file_exists($config['global']['epgfile'])) {
 	        				        $program['match']['hitT']=$search;
                                                 }
 					}
+					if (strlen($search)>0 && strcasecmp($program['info']['title'],$search) == 0) {
+					        $hit=true;
+					        if ($hit==true) {
+					                $program['match']['hitTExact']=$search;
+					        }
+					}
 				}
 				break;
 				
@@ -164,6 +171,7 @@ if (file_exists($config['global']['epgfile'])) {
 					foreach ($cache as $cached_program) {
 						if ($program['info']==$cached_program['info']) {
 							$cached=true;
+							$program['match']['cached']=true;
 							break;
 						}
 					}
