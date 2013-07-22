@@ -98,7 +98,7 @@ if (file_exists($config['global']['epgfile'])) {
 				# reset hit indicator at beginning of a new program description
 				$hit=false;
 				# read program data
-				list($program['info']['eventID'], $program['info']['startTime'], $program['info']['duration'], $program['info']['TableID'])=sscanf(substr($line,2),"%s %s %s %s");
+				list($program['info']['eventID'], $program['info']['startTime'], $program['info']['duration'])=sscanf(substr($line,2),"%s %s %s");
 				# startTime is in time_t format; convert to human readable format
 				$program['info']['startTime']=date("D M j G:i:s T Y",intval($program['info']['startTime']));
 				# store eventIDs for later purging the cache
@@ -184,7 +184,7 @@ if (file_exists($config['global']['epgfile'])) {
 		}
 	}
 	fclose($file);
-		
+
 	# check if new programs that matches the search filter were found
 	if (isset($programSave)) {
 		# mail newly found programs to user's mail address
