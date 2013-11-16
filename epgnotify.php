@@ -259,7 +259,7 @@ if (file_exists($config['global']['epgfile'])) {
                                 $mail_text .= "<br><a href=\"".$config['global']['vdradmin-am']['connect']."/vdradmin.pl?";
                                 $mail_text .= "aktion=timer_new_form";
                                 $mail_text .= "&epg_id=".$program['info']['eventID'];
-                                $mail_text .= "&vdr_id=".$vdr_id;
+                                $mail_text .= "&vdr_id=1";
                                 $mail_text .= "&referer=".base64_encode("./vdradmin.pl?aktion=timer_list");
                                 $mail_text .= "\">Link to vdradmin-am</a>";
                         }
