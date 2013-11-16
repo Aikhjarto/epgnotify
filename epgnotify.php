@@ -176,7 +176,12 @@ if (file_exists($config['global']['epgfile'])) {
 					}
 				}
 				break;
-				
+                        case "G":
+                                # space seperated list of up to four integers according to ETSI EN 300 468
+                                $program['info']['genre']=substr($line,2,strlen($line)-3);
+                        case "X": 
+                                # description of streams
+				$program['streams'][]=substr($line,2,strlen($line)-3);
 			case "e":
 				# end of currently processed program 
 				# check if search algorithm had a hit
