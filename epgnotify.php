@@ -247,7 +247,7 @@ if (file_exists($config['global']['epgfile'])) {
 	                $mail_text .= "<tr>";	 
 
 	                # add channel information
-	                $mail_text .= "<td align=\"center\">".  $program['channel']['id']. "<br>". $program['channel']['name'];
+	                $mail_text .= "<td align=\"center\">".  $program['channel']['id']. "<br><b>". $program['channel']['name']."</b>";
 	                if (isset($program['channel']['VPS'])) {
 	                        $mail_text .= "<br>VPS: ".$program['channel']['VPS'];
                         }
