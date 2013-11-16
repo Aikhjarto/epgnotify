@@ -36,6 +36,9 @@ function readConfig(){
 		fwrite($file,"[mail]\n");
 		fwrite($file,"mail_address=\"".getenv('USER')."@".getenv('HOSTNAME')."\"\n");
 		fwrite($file,"\n");
+		fwrite($file,"[time]\n");
+		fwrite($file,"timeformat=\"D M j G:i:s T Y\"\n");
+		fwrite($file,"\n");
 		fwrite($file,"global['epgfile']=\"/var/cache/vdr/epg.data\"\n");
 	}
 	$config_user=parse_ini_file(getenv('HOME')."/.epgnotify.ini");
@@ -45,6 +48,7 @@ function readConfig(){
 	if (!isset($config_user['notitle'])) {$config_user['notitle'][0]="";}
 	if (!isset($config_user['shortText'])) {$config_user['shortText'][0]="";}
 	if (!isset($config_user['description'])) {$config_user['description'][0]="";}
+	if (!isset($config_user['timeformat'])) {$config_user['timeformat']="D M j G:i:s T Y";}
 
 	# load global config
 	if (file_exists("/etc/epgnotify/global.ini")) {
@@ -121,7 +125,7 @@ if (file_exists($config['global']['epgfile'])) {
 				# read program data
 				list($program['info']['eventID'], $program['info']['startTime'], $program['info']['duration'])=sscanf(substr($line,2),"%s %s %s");
 				# startTime is in time_t format; convert to human readable format
-				$program['info']['startTime']=date("D M j G:i:s T Y",intval($program['info']['startTime']));
+				$program['info']['startTime']=date($config['timeformat'],intval($program['info']['startTime']));
 				# channel name and ID had been read before
 				$program['channel']['id']=$current_channel_id;
 				$program['channel']['name']=$current_channel_name;
