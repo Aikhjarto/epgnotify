@@ -48,12 +48,12 @@ function readConfig(){
 
 	# load global config
 	if (file_exists("/etc/epgnotify/global.ini")) {
-		$config_global=parse_ini_file("/etc/epgnotify/global.ini");
+		$config_global['global']=parse_ini_file("/etc/epgnotify/global.ini");
 	}
-	else {
+	if (!isset($config_global['global']['epgfile'])) {
 		$config_global['global']['epgfile']="/var/cache/vdr/epg.data";
 	}
-	
+		
 	# merge both configs
 	return array_merge($config_global,$config_user);
 
@@ -244,7 +244,7 @@ if (file_exists($config['global']['epgfile'])) {
 	                $mail_text .= "<td align=\"center\">";
 	                foreach (array_keys($program['info']) as $key) {
 	                        # description is optional but can be quite lengthy. So add it to seperate column.
-	                        if ( strcmp($key,"description") <> 0) {
+	                        if ( strcmp($key,"description") <> 0 && strcmp($key,"eventID" <> 0) ) {
         	                        if (strcmp($key,"startTime") == 0 || strcmp($key,"title") == 0) {
         	                                # don't print info for obvious fields
         	                                if (strcmp($key,"title") == 0) {
@@ -265,7 +265,16 @@ if (file_exists($config['global']['epgfile'])) {
         	                        }
 	                        }
                         }
+                        if (isset($config['global']['vdradmin-am']['connect'])) {
+                                $mail_text .= "<a href=\"".$config['global']['vdradmin-am']['connect']."/vdradmin.pl?";
+                                $mail_text .= "aktion=timer_new_form";
+                                $mail_text .= "&epg_id=".$program['info']['eventID'];
+                                $mail_text .= "&vdr_id=".$vdr_id;
+                                $mail_text .= "&referer=".base64_encode("./vdradmin.pl?aktion=timer_list");
+                                $mail_text .= "\">Link to vdradmin-am</a>";
+                        }
                         $mail_text .= "</td><td>";
+                                
                         if (isset($program['info']['description'])) {
                                 $mail_text .= $program['info']['description'];
                         }
