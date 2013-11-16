@@ -115,7 +115,7 @@ if (file_exists($config['global']['epgfile'])) {
 		                #list($current_channel_id, $current_channel_name)=sscanf(substr($line,2),"%s %s");
 		                $delim_idx=strpos(substr($line,2)," ")+2;
 		                $current_channel_id=substr($line,2,$delim_idx-2);
-		                $current_channel_name=substr($line,$delim_idx+1,strlen($line)-$delim_idx);
+		                $current_channel_name=substr($line,$delim_idx+1,strlen($line)-$delim_idx-2);
         	                # print_r($current_channel_id);
 		                # echo "\n";
 		                # print_r($current_channel_name);
@@ -239,7 +239,7 @@ if (file_exists($config['global']['epgfile'])) {
 	        $mail_text .= "<style type=\"text/css\">";
 	        $mail_text .= "ul {padding-left:1em;}";
 	        $mail_text .= "</style>";
-	        $mail_text .= "</head><body>";
+	        $mail_text .= "</head><body>\n";
 	        $mail_text .= "<table border=\"1\" width=\"100%\">";
 	        
 	        # table header
@@ -253,7 +253,7 @@ if (file_exists($config['global']['epgfile'])) {
 	        
 	        # a row for each found program
 	        foreach ($programSave as $program) {
-	                $mail_text .= "<tr>";	 
+	                $mail_text .= "\n<tr>";	 
 
 	                # add channel information
 	                $mail_text .= "<td align=\"center\">".  $program['channel']['id']. "<br><b>". $program['channel']['name']."</b>";
@@ -314,7 +314,7 @@ if (file_exists($config['global']['epgfile'])) {
 	                $mail_text .= "</td></tr>";
 	        }
       
-	        $mail_text .="</table></body></html>";
+	        $mail_text .="\n</table></body></html>";
 	        $mail_header = "MIME-Version: 1.0\r\n";
 	        $mail_header .= "Content-Type: text/html; charset=".$config['global']['charset']."\r\n";
 	        $mail_header .= "X-Mailer: PHP ". phpversion();
