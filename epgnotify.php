@@ -263,6 +263,7 @@ if (file_exists($config['global']['epgfile'])) {
         	                foreach ($program['info']['genre'] as $genre) {
         	                        $mail_text .=" ".$genre;
                                 }
+                                $mail_text .=" ";
 	                }
 	                $mail_text .= "Duration (min): ".sprintf("%d",intval($program['info']['duration'])/60);
                         if (isset($config['global']['vdradmin-am']['connect'])) {
