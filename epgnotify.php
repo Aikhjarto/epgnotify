@@ -278,7 +278,10 @@ if (file_exists($config['global']['epgfile'])) {
                                 $mail_text .= "&referer=".base64_encode("./vdradmin.pl?aktion=timer_list");
                                 $mail_text .= "\">Link to vdradmin-am</a>";
                         }
-                        $mail_text .= "</td><td>";
+                        $mail_text .= "</td>";
+                        
+                        # add description
+                        $mail_text .= "<td align=\"center\">";
                         if (isset($program['info']['short'])) {
                                 $mail_text .= $program['info']['short']."<br>";
                         }
