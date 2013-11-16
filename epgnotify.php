@@ -48,6 +48,9 @@ function readConfig(){
 
 	# load global config
 	if (file_exists("/etc/epgnotify/global.ini")) {
+	        # global config file should look like this: 
+        	# [global]
+        	# vdradmin-am['connect']="http://vdradmin:vdradmin@linux:8001"
 		$config_global['global']=parse_ini_file("/etc/epgnotify/global.ini");
 	}
 	if (!isset($config_global['global']['epgfile'])) {
