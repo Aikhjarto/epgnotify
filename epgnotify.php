@@ -186,7 +186,7 @@ if (file_exists($config['global']['epgfile'])) {
 				break;
                         case "V": 
                                 # VPS time in UTC
-                                $program['VPS']=substr($line,2,strlen($line)-3);
+                                $program['channel']['VPS']=substr($line,2,strlen($line)-3);
                                 break;
 			case "e":
 				# end of currently processed program 
@@ -216,8 +216,84 @@ if (file_exists($config['global']['epgfile'])) {
 
 	# check if new programs that matches the search filter were found
 	if (isset($programSave)) {
+	        # generate user friendly output
+	        $mail_text="<!DOCTYPE html><html><head><title>Notification about newely found programs</title></head><body>";
+	        $mail_text .= "<table border=\"1\" width=\"100%\">";
+	        
+	        # table header
+	        $mail_text .= "<tr>";
+	        $mail_text .= "<td><b>Channel</b></td>";
+	        $mail_text .= "<td><b>Program</b></td>";
+	        $mail_text .= "<td><b>Description</b></td>";	        
+	        $mail_text .= "<td><b>Match</b></td>";
+	        $mail_text .= "<td><b>Streams</b></td>";
+	        $mail_text .= "</tr>";
+	        
+	        # a row for each found program
+	        foreach ($programSave as $program) {
+	                $mail_text .= "<tr>";	 
+
+	                # add channel information
+	                $mail_text .= "<td align=\"center\">".  $program['channel']['id']. "<br>". $program['channel']['name'];
+	                if (isset($program['channel']['VPS'])) {
+	                        $mail_text .= "<br>VPS: ".$program['channel']['VPS'];
+                        }
+	                $mail_text .= "</td>";
+	                
+	                # add program information
+	                $mail_text .= "<td align=\"center\">";
+	                foreach (array_keys($program['info']) as $key) {
+	                        # description is optional but can be quite lengthy. So add it to seperate column.
+	                        if ( strcmp($key,"description") <> 0) {
+        	                        if (strcmp($key,"startTime") == 0 || strcmp($key,"title") == 0) {
+        	                                # don't print info for obvious fields
+        	                                if (strcmp($key,"title") == 0) {
+        	                                        $mail_text .= "<b>";
+        	                                }
+        	                                $mail_text .= $program['info'][$key]."<br>";
+        	                                if (strcmp($key,"title") == 0) {
+        	                                        $mail_text .= "</b>";
+                                                }
+        	                        } elseif (strcmp($key,"genre") == 0) {
+        	                                $mail_text .= "Genre: ";
+        	                                foreach ($program['info']['genre'] as $genre) {
+        	                                        $mail_text .=" ".$genre;
+        	                                }
+        	                        }
+        	                        else {
+                	                        $mail_text .= $key.": ".$program['info'][$key]."<br>";
+        	                        }
+	                        }
+                        }
+                        $mail_text .= "</td><td>";
+                        if (isset($program['info']['description'])) {
+                                $mail_text .= $program['info']['description'];
+                        }
+                        $mail_text .="</td>";
+                            
+	                # add matches
+	                $mail_text .= "<td>";
+	                foreach (array_keys($program['match']) as $key) {
+	                        $mail_text .= $key.": ".$program['match'][$key]."<br>";
+                        }
+                        $mail_text .= "</td>";
+                        
+	                # add streams (optional, may be not set)
+	                $mail_text .= "<td>";
+                        if (isset($program['streams'])) {
+                                foreach ($program['streams'] as $stream) {
+        	                        $mail_text .=  $stream ."<br>";
+                                }
+	                }
+	                $mail_text .= "</td></tr>";
+	        }
+      
+	        $mail_text .="</table></body></html>";
+	        $mail_header = "MIME-Version: 1.0\r\n";
+	        $mail_header .= "Content-Type: text/html; charset=UTF-8\r\n";
+	        $mail_header .= "X-Mailer: PHP ". phpversion();
 		# mail newly found programs to user's mail address
-		$mail_success=mail($config['mail_address'], "epgnotify found ".count($programSave)." new programs for you" , print_r($programSave,true));
+		$mail_success=mail($config['mail_address'], "epgnotify found ".count($programSave)." new programs for you" , $mail_text, $mail_header);
 		# add newly found programs to cached list
 		$cache=array_merge($programSave,$cache);
 
