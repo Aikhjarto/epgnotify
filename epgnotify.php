@@ -104,7 +104,7 @@ if (file_exists($config['global']['epgfile'])) {
 		# read next line (is of format X data1 data2 ...)
 		$line=fgets($file);
 		
-		# optionally: encoding convertion (some stations send their data in a different encoding as they say they do)
+		# optionally: encoding conversion (some stations send their data in a different encoding as they say they do)
 		#$line=mb_convert_encoding($line,'ISO-8859-9','ISO-8859-15');
 
 		# switch line identifier (first character of line)
@@ -143,7 +143,7 @@ if (file_exists($config['global']['epgfile'])) {
 				$program['info']['title']=substr($line,2,strlen($line)-3);
 				# search for matching string in title
 				foreach ($config['title'] as $search) {
-					# skip empty strings (these are placeholders in config file)
+					# skip empty strings (these are place-holders in config file)
 					if (strlen($search)>0 && !(stripos($program['info']['title'],$search) === false)) {
                                                 $hit=true;
 						foreach ($config['notitle'] as $nosearch) {
@@ -169,7 +169,7 @@ if (file_exists($config['global']['epgfile'])) {
 				$program['info']['short']=substr($line,2,strlen($line)-3);
 				# search for matching string in short description
 				foreach ($config['shortText'] as $search) {
-					# skip empty strings (these are placeholders in config file)
+					# skip empty strings (these are place-holders in config file)
 					if (strlen($search)>0) {
 						if (!(stripos($program['info']['title'],$search) === false)){
 							$hit=true;
@@ -184,7 +184,7 @@ if (file_exists($config['global']['epgfile'])) {
 				$program['info']['description']=substr($line,2,strlen($line)-3);
 				# search for matching string in  description
 				foreach ($config['description'] as $search) {
-					# skip empty strings (these are placeholders in config file)
+					# skip empty strings (these are place-holders in config file)
 					if (strlen($search)>0) {
 						if (!(stripos($program['info']['description'],$search) === false)){
 							$hit=true;
@@ -194,7 +194,7 @@ if (file_exists($config['global']['epgfile'])) {
 				}
 				break;
                         case "G":
-                                # space seperated list of up to four integers according to ETSI EN 300 468
+                                # space separated list of up to four integers according to ETSI EN 300 468
                                 $program['info']['genre']=explode(" ",substr($line,2,strlen($line)-3));
                                 break; 
                         case "X": 
@@ -234,7 +234,7 @@ if (file_exists($config['global']['epgfile'])) {
 	# check if new programs that matches the search filter were found
 	if (isset($programSave)) {
 	        # generate user friendly output
-	        $mail_text="<!DOCTYPE html><html><head><title>Notification about newely found programs</title></head><body>";
+	        $mail_text="<!DOCTYPE html><html><head><title>Notification about newly found programs</title></head><body>";
 	        $mail_text .= "<table border=\"1\" width=\"100%\">";
 	        
 	        # table header
@@ -331,7 +331,7 @@ if (file_exists($config['global']['epgfile'])) {
 			unset($cache[$i]);
 		}
 	}
-	# reduce indicess (not leave an empty index back)
+	# reduce indices (not leave an empty index back)
 	$cache=array_merge($cache); 
 	# save cache
 	file_put_contents(getenv('HOME')."/.epgnotify.cache",serialize($cache));
