@@ -51,6 +51,7 @@ function readConfig(){
 	        # global config file should look like this: 
         	# [global]
         	# vdradmin-am['connect']="http://vdradmin:vdradmin@linux:8001"
+        	# timezone="Europe/Vienna"
 		$config_global['global']=parse_ini_file("/etc/epgnotify/global.ini");
 	}
 	if (!isset($config_global['global']['epgfile'])) {
@@ -66,6 +67,11 @@ function readConfig(){
 
 # read config from files
 $config=readConfig();
+
+# set correct local timezone
+if (isset($config['global']['timezone'])){
+        date_default_timezone_set($config['global']['timezone']);
+}
 
 # read cache (programs for which a notification has been sent and that are still in the epg database)
 if (file_exists(getenv('HOME')."/.epgnotify.cache")) {
