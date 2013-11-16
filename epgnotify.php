@@ -36,7 +36,7 @@ function readConfig(){
 		fwrite($file,"[mail]\n");
 		fwrite($file,"mail_address=\"".getenv('USER')."@".getenv('HOSTNAME')."\"\n");
 		fwrite($file,"\n");
-		fwrite($file,"global['epgfile']=\"/etc/vdr/epg.data\"\n");
+		fwrite($file,"global['epgfile']=\"/var/cache/vdr/epg.data\"\n");
 	}
 	$config_user=parse_ini_file(getenv('HOME')."/.epgnotify.ini");
 	
