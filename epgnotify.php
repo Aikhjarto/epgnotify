@@ -56,10 +56,14 @@ function readConfig(){
         	# [global]
         	# vdradmin-am['connect']="http://vdradmin:vdradmin@linux:8001"
         	# timezone="Europe/Vienna"
+        	# charset="UTF-8"
 		$config_global['global']=parse_ini_file("/etc/epgnotify/global.ini");
 	}
 	if (!isset($config_global['global']['epgfile'])) {
 		$config_global['global']['epgfile']="/var/cache/vdr/epg.data";
+	}
+	if (!isset($config_global['global']['charset'])) {
+	        $config_global['global']['charset']="ISO-8859-1";
 	}
 		
 	# merge both configs
@@ -300,7 +304,7 @@ if (file_exists($config['global']['epgfile'])) {
       
 	        $mail_text .="</table></body></html>";
 	        $mail_header = "MIME-Version: 1.0\r\n";
-	        $mail_header .= "Content-Type: text/html; charset=UTF-8\r\n";
+	        $mail_header .= "Content-Type: text/html; charset=".$config['global']['charset']."\r\n";
 	        $mail_header .= "X-Mailer: PHP ". phpversion();
 		# mail newly found programs to user's mail address
 		$mail_success=mail($config['mail_address'], "epgnotify found ".count($programSave)." new programs for you" , $mail_text, $mail_header);
