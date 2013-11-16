@@ -92,6 +92,18 @@ if (file_exists($config['global']['epgfile'])) {
 
 		# switch line identifier (first character of line)
 		switch (substr($line,0,1)) {
+		        case "C": 
+		                # new channel
+		                # sscanf doesn't work in php 5 if a space is in channel name
+		                #list($current_channel_id, $current_channel_name)=sscanf(substr($line,2),"%s %s");
+		                $delim_idx=strpos(substr($line,2)," ")+2;
+		                $current_channel_id=substr($line,2,$delim_idx-2);
+		                $current_channel_name=substr($line,$delim_idx+1,strlen($line)-$delim_idx);
+        	                # print_r($current_channel_id);
+		                # echo "\n";
+		                # print_r($current_channel_name);
+		                # echo "\n\n";
+		                
 			case "E":
 				#new program
 				unset($program);
@@ -101,6 +113,9 @@ if (file_exists($config['global']['epgfile'])) {
 				list($program['info']['eventID'], $program['info']['startTime'], $program['info']['duration'])=sscanf(substr($line,2),"%s %s %s");
 				# startTime is in time_t format; convert to human readable format
 				$program['info']['startTime']=date("D M j G:i:s T Y",intval($program['info']['startTime']));
+				# channel name and ID had been read before
+				$program['channel']['id']=$current_channel_id;
+				$program['channel']['name']=$current_channel_name;
 				# store eventIDs for later purging the cache
 				$eventID[$eventIDCount]=$program['info']['eventID'];
 				$eventIDCount=$eventIDCount+1;
@@ -181,6 +196,9 @@ if (file_exists($config['global']['epgfile'])) {
 					}
 				}
 				break;
+                        case "c": # end of currently processed channel
+                                # do nothing right now, maybe add debug output later
+                                break;
 		}
 	}
 	fclose($file);
