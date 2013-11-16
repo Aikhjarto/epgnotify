@@ -1,2 +1,2 @@
 * Add search option via Levenshtein distance.
-* better output format
+* make a install script which copies epgnotify.php to /usr/local/bin, generates default config in /etc/epgnotify/global.ini, and sets up a cronjob
