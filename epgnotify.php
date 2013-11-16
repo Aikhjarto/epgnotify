@@ -225,11 +225,11 @@ if (file_exists($config['global']['epgfile'])) {
 	        
 	        # table header
 	        $mail_text .= "<tr>";
-	        $mail_text .= "<td><b>Channel</b></td>";
-	        $mail_text .= "<td><b>Program</b></td>";
-	        $mail_text .= "<td><b>Description</b></td>";	        
-	        $mail_text .= "<td><b>Match</b></td>";
-	        $mail_text .= "<td><b>Streams</b></td>";
+	        $mail_text .= "<td align=\"center\"><b>Channel</b></td>";
+	        $mail_text .= "<td align=\"center\"><b>Program</b></td>";
+	        $mail_text .= "<td align=\"center\"><b>Description</b></td>";	        
+	        $mail_text .= "<td align=\"center\"><b>Match</b></td>";
+	        $mail_text .= "<td align=\"center\"><b>Streams</b></td>";
 	        $mail_text .= "</tr>";
 	        
 	        # a row for each found program
@@ -245,31 +245,18 @@ if (file_exists($config['global']['epgfile'])) {
 	                
 	                # add program information
 	                $mail_text .= "<td align=\"center\">";
-	                foreach (array_keys($program['info']) as $key) {
-	                        # description is optional but can be quite lengthy. So add it to seperate column.
-	                        if ( strcmp($key,"description") <> 0 && strcmp($key,"eventID" <> 0) ) {
-        	                        if (strcmp($key,"startTime") == 0 || strcmp($key,"title") == 0) {
-        	                                # don't print info for obvious fields
-        	                                if (strcmp($key,"title") == 0) {
-        	                                        $mail_text .= "<b>";
-        	                                }
-        	                                $mail_text .= $program['info'][$key]."<br>";
-        	                                if (strcmp($key,"title") == 0) {
-        	                                        $mail_text .= "</b>";
-                                                }
-        	                        } elseif (strcmp($key,"genre") == 0) {
-        	                                $mail_text .= "Genre: ";
-        	                                foreach ($program['info']['genre'] as $genre) {
-        	                                        $mail_text .=" ".$genre;
-        	                                }
-        	                        }
-        	                        else {
-                	                        $mail_text .= $key.": ".$program['info'][$key]."<br>";
-        	                        }
-	                        }
-                        }
+	                $mail_text .= $program['info']['startTime']."<br>";
+	                $mail_text .= "<b>".$program['info']['title']."</b><br>";
+	                $mail_text .= "EventID: ".$program['info']['eventID']." ";
+	                if ( isset($program['info']['genre']) ){
+	                        $mail_text .= "Genre: ";
+        	                foreach ($program['info']['genre'] as $genre) {
+        	                        $mail_text .=" ".$genre;
+                                }
+	                }
+	                $mail_text .= "Duration (min): ".sprintf("%d",intval($program['info']['duration'])/60);
                         if (isset($config['global']['vdradmin-am']['connect'])) {
-                                $mail_text .= "<a href=\"".$config['global']['vdradmin-am']['connect']."/vdradmin.pl?";
+                                $mail_text .= "<br><a href=\"".$config['global']['vdradmin-am']['connect']."/vdradmin.pl?";
                                 $mail_text .= "aktion=timer_new_form";
                                 $mail_text .= "&epg_id=".$program['info']['eventID'];
                                 $mail_text .= "&vdr_id=".$vdr_id;
