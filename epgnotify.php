@@ -234,7 +234,12 @@ if (file_exists($config['global']['epgfile'])) {
 	# check if new programs that matches the search filter were found
 	if (isset($programSave)) {
 	        # generate user friendly output
-	        $mail_text="<!DOCTYPE html><html><head><title>Notification about newly found programs</title></head><body>";
+	        $mail_text="<!DOCTYPE html><html><head>";
+	        $mail_text .= "<title>Notification about newly found programs</title>";
+	        $mail_text .= "<style type=\"text/css\">";
+	        $mail_text .= "ul {padding-left:1em;}";
+	        $mail_text .= "</style>";
+	        $mail_text .= "</head><body>";
 	        $mail_text .= "<table border=\"1\" width=\"100%\">";
 	        
 	        # table header
@@ -291,18 +296,20 @@ if (file_exists($config['global']['epgfile'])) {
                         $mail_text .="</td>";
                             
 	                # add matches
-	                $mail_text .= "<td>";
+	                $mail_text .= "<td><ul>";
 	                foreach (array_keys($program['match']) as $key) {
-	                        $mail_text .= $key.": ".$program['match'][$key]."<br>";
+	                        $mail_text .= "<li>".$key.": ".$program['match'][$key]."</li>";
                         }
-                        $mail_text .= "</td>";
+                        $mail_text .= "</ul></td>";
                         
 	                # add streams (optional, may be not set)
 	                $mail_text .= "<td>";
                         if (isset($program['streams'])) {
+                                $mail_text .= "<ul>";
                                 foreach ($program['streams'] as $stream) {
-        	                        $mail_text .=  $stream ."<br>";
+        	                        $mail_text .=  "<li>".$stream ."</li>";
                                 }
+                                $mail_text .= "</ul>";
 	                }
 	                $mail_text .= "</td></tr>";
 	        }
