@@ -4,8 +4,8 @@ It is a simple email notification for upcomming programs. It reads epg.data crea
 
 Prerequisties
 =============
-() vdr 2.0 or 1.7 (might work with 1.6 but its not confirmed)
-() php parser (tested with php 5.3)
+* vdr 2.0 or 1.7 (might work with 1.6 but its not confirmed)
+* php parser (tested with php 5.3)
 
 Usage
 =====
