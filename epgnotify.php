@@ -279,7 +279,9 @@ if (file_exists($config['global']['epgfile'])) {
                                 $mail_text .= "\">Link to vdradmin-am</a>";
                         }
                         $mail_text .= "</td><td>";
-                                
+                        if (isset($program['info']['short'])) {
+                                $mail_text .= $program['info']['short']."<br>";
+                        }
                         if (isset($program['info']['description'])) {
                                 $mail_text .= $program['info']['description'];
                         }
