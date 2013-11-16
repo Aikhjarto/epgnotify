@@ -184,6 +184,10 @@ if (file_exists($config['global']['epgfile'])) {
                                 # description of streams, can occur more than ones
 				$program['streams'][]=substr($line,2,strlen($line)-3);
 				break;
+                        case "V": 
+                                # VPS time in UTC
+                                $program['VPS']=substr($line,2,strlen($line)-3);
+                                break;
 			case "e":
 				# end of currently processed program 
 				# check if search algorithm had a hit
