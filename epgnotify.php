@@ -1,3 +1,4 @@
+#!/usr/bin/php
 <?php
 # EPGNOTIFY implements a brief e-mail notification of new programms found in vdr's epg.data file
 # Copyright (C) 2013  Thomas Wagner
