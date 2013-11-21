@@ -1,2 +1,3 @@
+* vdradmin-am site is only partially loaded from link. E.g. left navigation bar is missing (frame issue) and referer to timer overview needs manuall login
 * Add search option via Levenshtein distance.
 * make a install script which copies epgnotify.php to /usr/local/bin, generates default config in /etc/epgnotify/global.ini, and sets up a cronjob
