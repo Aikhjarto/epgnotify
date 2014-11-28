@@ -10,9 +10,9 @@ Prerequisites
 
 Usage
 =====
-Simply run "php epgnotify.php". Config is stored in ~/.epgconfig.ini (which is created and initialized with default values).
+Simply run "php epgnotify.php" or "./epgnotify.php". Config is stored in ~/.epgconfig.ini (which is created and initialized with default values).
 It's good practice to run periodically with e.g. cron to get daily information. Just add the following line to 'crontab -e'
-0 0 * * * php /path/to/epgnotify.php
+0 0 * * * /usr/local/bin/epgnotify.php
 
 What it does in detail
 ======================
