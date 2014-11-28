@@ -21,7 +21,7 @@ function readConfig(){
 	if (!file_exists(getenv('HOME')."/.epgnotify.ini")) {
 		# if file does not exists: write a new one
 		$file=fopen(getenv('HOME')."/.epgnotify.ini",'w');
-		fwrite($file,"; file should be encoded in ISO-8859-1\n");
+		fwrite($file,"; file should be encoded in UTF-8 (same as for epg.data)\n");
 		fwrite($file,"[searchStrings]\n");
 		fwrite($file,";title[]=\"Pulp Fiction\"\n");
 		fwrite($file,";title[]=\"2 Fast\"\n");
@@ -64,7 +64,7 @@ function readConfig(){
 		$config_global['global']['epgfile']="/var/cache/vdr/epg.data";
 	}
 	if (!isset($config_global['global']['charset'])) {
-	        $config_global['global']['charset']="ISO-8859-1";
+	        $config_global['global']['charset']="UTF-8";
 	}
 		
 	# merge both configs
@@ -172,7 +172,7 @@ if (file_exists($config['global']['epgfile'])) {
 				foreach ($config['shortText'] as $search) {
 					# skip empty strings (these are place-holders in config file)
 					if (strlen($search)>0) {
-						if (!(stripos($program['info']['title'],$search) === false)){
+						if (!(stripos($program['info']['short'],$search) === false)){
 							$hit=true;
 							$program['match']['hitS']=$search;
 						}
