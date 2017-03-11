@@ -25,7 +25,7 @@ function readConfig(){
 		fwrite($file,"[searchStrings]\n");
 		fwrite($file,";title[]=\"Pulp Fiction\"\n");
 		fwrite($file,";title[]=\"2 Fast\"\n");
-		fwrite($file,";title[]=\"Ö3\"\n");
+		fwrite($file,";title[]=\"Ã–3\"\n");
 		fwrite($file,";title[]=\"Musik\"\n");
 		fwrite($file,";title[]=\"Sherlock\"\n");		
 		fwrite($file,";title[]=\"Sherlock Yack\"\n");
@@ -92,6 +92,7 @@ if (file_exists(getenv('HOME')."/.epgnotify.cache")) {
 	$cache = array();
 }
 
+# svdrpsend LSTE | sed -e 's/215-//' -e '1d' | head -n -2 > tmp.epg
 # read and process egpfile if exists
 if (file_exists($config['global']['epgfile'])) {
 	# open epg database from vdr
