@@ -290,6 +290,7 @@ if (file_exists($tmp_epgfile)) {
 		$mail_text .= "table, td, th {border: 1px solid gray;}\n";
 		$mail_text .= "table {width: 100%}\n";
 		$mail_text .= "td {text-align: center;}\n";
+		$mail_text .= "td.lft {text-align: left;}\n";
 	        $mail_text .= "</style>\n";
 	        $mail_text .= "</head>\n<body>\n";
 	        $mail_text .= "<table>\n";
@@ -348,14 +349,14 @@ if (file_exists($tmp_epgfile)) {
                         $mail_text .="</td>\n";
                             
 	                # add matches
-	                $mail_text .= "<td><ul>";
+	                $mail_text .= "<td class="lft"><ul>";
 	                foreach (array_keys($program['match']) as $key) {
 	                        $mail_text .= "<li>".$key.": ".$program['match'][$key]."</li>";
                         }
                         $mail_text .= "</ul></td>\n";
                         
 	                # add streams (optional, may be not set)
-	                $mail_text .= "<td>";
+	                $mail_text .= "<td class="lft">";
                         if (isset($program['streams'])) {
                                 $mail_text .= "<ul>";
                                 foreach ($program['streams'] as $stream) {
