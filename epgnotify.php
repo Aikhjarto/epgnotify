@@ -274,36 +274,40 @@ if (file_exists("/tmp/epgdata.tmp")) {
 	# check if new programs that matches the search filter were found
 	if (isset($programSave)) {
 	        # generate user friendly output
-	        $mail_text="<!DOCTYPE html><html><head>";
-	        $mail_text .= "<title>Notification about newly found programs</title>";
+	        $mail_text  = "<!DOCTYPE html>\n<html>\n<head>";
+		$mail_text .= "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\n";
+	        $mail_text .= "<title>Notification about newly found programs</title>\n";
 	        $mail_text .= "<style type=\"text/css\">";
-	        $mail_text .= "ul {padding-left:1em;}";
-	        $mail_text .= "</style>";
-	        $mail_text .= "</head><body>\n";
-	        $mail_text .= "<table border=\"1\" width=\"100%\">";
+	        $mail_text .= "ul {padding-left:2em;}\n";
+		$mail_text .= "table, td, th {border: 1px solid gray;}\n";
+		$mail_text .= "table {width: 100%}\n";
+		$mail_text .= "td {text-align: center;}\n"
+	        $mail_text .= "</style>\n";
+	        $mail_text .= "</head>\n<body>\n";
+	        $mail_text .= "<table>\n";
 	        
 	        # table header
 	        $mail_text .= "<tr>";
-	        $mail_text .= "<td align=\"center\"><b>Channel</b></td>";
-	        $mail_text .= "<td align=\"center\"><b>Program</b></td>";
-	        $mail_text .= "<td align=\"center\"><b>Description</b></td>";	        
-	        $mail_text .= "<td align=\"center\"><b>Match</b></td>";
-	        $mail_text .= "<td align=\"center\"><b>Streams</b></td>";
-	        $mail_text .= "</tr>";
+	        $mail_text .= "<th><b>Channel</b></th>";
+	        $mail_text .= "<th><b>Program</b></th>";
+	        $mail_text .= "<th><b>Description</b></th>";	        
+	        $mail_text .= "<th><b>Match</b></th>";
+	        $mail_text .= "<th><b>Streams</b></th>";
+	        $mail_text .= "</tr>\n";
 	        
 	        # a row for each found program
 	        foreach ($programSave as $program) {
 	                $mail_text .= "\n<tr>";	 
 
 	                # add channel information
-	                $mail_text .= "<td align=\"center\">".  $program['channel']['id']. "<br><b>". $program['channel']['name']."</b>";
+	                $mail_text .= "<td>".  $program['channel']['id']. "<br>\n<b>". $program['channel']['name']."</b>\n";
 	                if (isset($program['channel']['VPS'])) {
-	                        $mail_text .= "<br>VPS: ".$program['channel']['VPS'];
+	                        $mail_text .= "<br>\nVPS: ".$program['channel']['VPS'];
                         }
-	                $mail_text .= "</td>";
+	                $mail_text .= "</td>\n";
 	                
 	                # add program information
-	                $mail_text .= "<td align=\"center\">";
+	                $mail_text .= "<td>";
 	                $mail_text .= $program['info']['startTime']."<br>";
 	                $mail_text .= "<b>".$program['info']['title']."</b><br>";
 	                $mail_text .= "EventID: ".$program['info']['eventID']." ";
@@ -316,31 +320,31 @@ if (file_exists("/tmp/epgdata.tmp")) {
 	                }
 	                $mail_text .= "Duration (min): ".sprintf("%d",intval($program['info']['duration'])/60);
                         if (isset($config['global']['vdradmin-am']['connect'])) {
-                                $mail_text .= "<br><a href=\"".$config['global']['vdradmin-am']['connect']."/vdradmin.pl?";
+                                $mail_text .= "<br>\n<a href=\"".$config['global']['vdradmin-am']['connect']."/vdradmin.pl?";
                                 $mail_text .= "aktion=timer_new_form";
                                 $mail_text .= "&epg_id=".$program['info']['eventID'];
                                 $mail_text .= "&channel_id=".$program['channel']['id'];
                                 $mail_text .= "&referer=".base64_encode("./vdradmin.pl?aktion=timer_list");
                                 $mail_text .= "\">Link to vdradmin-am</a>";
                         }
-                        $mail_text .= "</td>";
+                        $mail_text .= "</td>\n";
                         
                         # add description
-                        $mail_text .= "<td align=\"center\">";
+                        $mail_text .= "<td>";
                         if (isset($program['info']['short'])) {
-                                $mail_text .= $program['info']['short']."<br>";
+                                $mail_text .= $program['info']['short']."<br>\n";
                         }
                         if (isset($program['info']['description'])) {
                                 $mail_text .= $program['info']['description'];
                         }
-                        $mail_text .="</td>";
+                        $mail_text .="</td>\n";
                             
 	                # add matches
 	                $mail_text .= "<td><ul>";
 	                foreach (array_keys($program['match']) as $key) {
 	                        $mail_text .= "<li>".$key.": ".$program['match'][$key]."</li>";
                         }
-                        $mail_text .= "</ul></td>";
+                        $mail_text .= "</ul></td>\n";
                         
 	                # add streams (optional, may be not set)
 	                $mail_text .= "<td>";
@@ -351,15 +355,22 @@ if (file_exists("/tmp/epgdata.tmp")) {
                                 }
                                 $mail_text .= "</ul>";
 	                }
-	                $mail_text .= "</td></tr>";
+	                $mail_text .= "</td></tr>\n";
 	        }
       
-	        $mail_text .="\n</table></body></html>";
+	        $mail_text .="\n</table></body></html>\n";
+
+		# Hint: most mailserver have a limit of 990 characters per line.
+		$mail_text = wordwrap($mail_text,990);
+
+		# add mail header
 	        $mail_header = "MIME-Version: 1.0\r\n";
 	        $mail_header .= "Content-Type: text/html; charset=".$config['global']['charset']."\r\n";
 	        $mail_header .= "X-Mailer: PHP ". phpversion();
+
 		# mail newly found programs to user's mail address
 		$mail_success=mail($config['mail_address'], "epgnotify found ".count($programSave)." new programs for you" , $mail_text, $mail_header);
+
 		# add newly found programs to cached list
 		$cache=array_merge($programSave,$cache);
 
