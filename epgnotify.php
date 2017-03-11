@@ -118,18 +118,22 @@ if (file_exists($config['global']['epgfile'])) {
             	echo "$errstr ($errno)\n";
             } else {
 	            $fw=fopen($tmp_epgfile,"w");
-	            $out = "LSTE\n";
-	            $out .= "QUIT\n";
-	            fwrite($fp, $out);
-	            while (!feof($fp)) {
-	                $line=fgets($fp);
-	                if ( mb_strpos($line,"215-") === 0 ) {    
-	                    # lines containing data starts with 215-
-	                    #echo $line;
-	                    fwrite($fw,mb_substr($line,4,mb_strlen($line)-4));
-	                }
-	            }
-	            fclose($fp);
+	            if (!$fw) {
+                    	echo "$errstr ($errno)\n";
+	            } else {
+			    $out = "LSTE\n";
+			    $out .= "QUIT\n";
+			    fwrite($fp, $out);
+			    while (!feof($fp)) {
+				$line=fgets($fp);
+				if ( mb_strpos($line,"215-") === 0 ) {    
+				    # lines containing data starts with 215-
+				    #echo $line;
+				    fwrite($fw,mb_substr($line,4,mb_strlen($line)-4));
+				}
+			    }
+			    fclose($fp);
+		    }
             }
 }
 
