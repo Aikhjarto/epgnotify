@@ -187,7 +187,7 @@ if (file_exists("/tmp/epgdata.tmp")) {
 					if (mb_strlen($search)>0 && !(stripos($program['info']['title'],$search) === false)) {
                                                 $hit=true;
 						foreach ($config['notitle'] as $nosearch) {
-						        if (mb_strlen($nosearch)>0 && !(stripos($program['info']['title'],$nosearch) === false)) {
+						        if (mb_strlen($nosearch)>0 && !(mb_stripos($program['info']['title'],$nosearch) === false)) {
 						                $hit=false;
                                                         }
                                                 }
@@ -211,7 +211,7 @@ if (file_exists("/tmp/epgdata.tmp")) {
 				foreach ($config['shortText'] as $search) {
 					# skip empty strings (these are place-holders in config file)
 					if (mb_strlen($search)>0) {
-						if (!(stripos($program['info']['short'],$search) === false)){
+						if (!(mb_stripos($program['info']['short'],$search) === false)){
 							$hit=true;
 							$program['match']['hitS']=$search;
 						}
@@ -226,7 +226,7 @@ if (file_exists("/tmp/epgdata.tmp")) {
 				foreach ($config['description'] as $search) {
 					# skip empty strings (these are place-holders in config file)
 					if (mb_strlen($search)>0) {
-						if (!(stripos($program['info']['description'],$search) === false)){
+						if (!(mb_stripos($program['info']['description'],$search) === false)){
 							$hit=true;
 							$program['match']['hitD']=$search;
 						}

@@ -5,7 +5,7 @@ It is a simple email notification for upcoming programs. It reads epg.data creat
 Prerequisites
 =============
 * vdr 2.0 or 1.7 (might work with 1.6 but its not confirmed)
-* php parser (tested with php 5.3) with mail capabilities
+* php parser (tested with php 5.3) with mail capabilities and php5-mbstring
 * optional: vdradmin-am (tested with version 3.6.9) for directly scheduling a recording via link
 
 Usage
