@@ -281,7 +281,7 @@ if (file_exists("/tmp/epgdata.tmp")) {
 	        $mail_text .= "ul {padding-left:2em;}\n";
 		$mail_text .= "table, td, th {border: 1px solid gray;}\n";
 		$mail_text .= "table {width: 100%}\n";
-		$mail_text .= "td {text-align: center;}\n"
+		$mail_text .= "td {text-align: center;}\n";
 	        $mail_text .= "</style>\n";
 	        $mail_text .= "</head>\n<body>\n";
 	        $mail_text .= "<table>\n";
