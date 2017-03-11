@@ -105,7 +105,7 @@ if (file_exists(getenv('HOME')."/.epgnotify.cache")) {
 	$cache = array();
 }
 
-$tmp_epgfile="/tmp/epgdata_".get_current_user()."tmp";
+$tmp_epgfile="/tmp/epgdata_".get_current_user().".tmp";
 # get epg data either from local epg file or from VDR plugin svdrp
 if (file_exists($config['global']['epgfile'])) {
         copy($config['global']['epgfile'],$tmp_epgfile);
