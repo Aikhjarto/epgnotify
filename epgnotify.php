@@ -67,6 +67,9 @@ function readConfig(){
 	if (!array_key_exists('charset',$config_global['global'])) {
 	        $config_global['global']['charset']="UTF-8";
 	}
+	if (!array_key_exists('svdrphost',$config_global['global'])) {
+	        $config_global['global']['svdrphost']="linux.private.lan";
+	}
 #	echo("config_global");					
 #       print_r($config_global);
         
@@ -110,7 +113,7 @@ $tmp_epgfile="/tmp/epgdata_".get_current_user().".tmp";
 if (file_exists($config['global']['epgfile'])) {
         copy($config['global']['epgfile'],$tmp_epgfile);
 } else {
-        $fp = fsockopen("linux.private.lan", 6419, $errno, $errstr, 30);
+        $fp = fsockopen($config['global']['svdrphost'], 6419, $errno, $errstr, 30);
         if (!$fp) {
             	echo "$errstr ($errno)\n";
             } else {
