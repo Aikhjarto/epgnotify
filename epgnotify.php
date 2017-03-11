@@ -349,14 +349,14 @@ if (file_exists($tmp_epgfile)) {
                         $mail_text .="</td>\n";
                             
 	                # add matches
-	                $mail_text .= "<td class="lft"><ul>";
+	                $mail_text .= "<td class=\"lft\"><ul>";
 	                foreach (array_keys($program['match']) as $key) {
 	                        $mail_text .= "<li>".$key.": ".$program['match'][$key]."</li>";
                         }
                         $mail_text .= "</ul></td>\n";
                         
 	                # add streams (optional, may be not set)
-	                $mail_text .= "<td class="lft">";
+	                $mail_text .= "<td class=\"lft\">";
                         if (isset($program['streams'])) {
                                 $mail_text .= "<ul>";
                                 foreach ($program['streams'] as $stream) {
