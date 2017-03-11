@@ -110,14 +110,14 @@ if (file_exists($config['global']['epgfile'])) {
 		#$line=mb_convert_encoding($line,'ISO-8859-9','ISO-8859-15');
 
 		# switch line identifier (first character of line)
-		switch (substr($line,0,1)) {
+		switch (mb_substr($line,0,1)) {
 		        case "C": 
 		                # new channel
 		                # sscanf doesn't work in php 5 if a space is in channel name
-		                #list($current_channel_id, $current_channel_name)=sscanf(substr($line,2),"%s %s");
-		                $delim_idx=strpos(substr($line,2)," ")+2;
-		                $current_channel_id=substr($line,2,$delim_idx-2);
-		                $current_channel_name=substr($line,$delim_idx+1,strlen($line)-$delim_idx-2);
+		                #list($current_channel_id, $current_channel_name)=sscanf(mb_substr($line,2),"%s %s");
+		                $delim_idx=mb_strpos(mb_substr($line,2)," ")+2;
+		                $current_channel_id=mb_substr($line,2,$delim_idx-2);
+		                $current_channel_name=mb_substr($line,$delim_idx+1,mb_strlen($line)-$delim_idx-2);
         	                # print_r($current_channel_id);
 		                # echo "\n";
 		                # print_r($current_channel_name);
@@ -129,7 +129,7 @@ if (file_exists($config['global']['epgfile'])) {
 				# reset hit indicator at beginning of a new program description
 				$hit=false;
 				# read program data
-				list($program['info']['eventID'], $program['info']['startTime'], $program['info']['duration'])=sscanf(substr($line,2),"%s %s %s");
+				list($program['info']['eventID'], $program['info']['startTime'], $program['info']['duration'])=sscanf(mb_substr($line,2),"%s %s %s");
 				# startTime is in time_t format; convert to human readable format
 				$program['info']['startTime']=date($config['timeformat'],intval($program['info']['startTime']));
 				# channel name and ID had been read before
@@ -142,14 +142,14 @@ if (file_exists($config['global']['epgfile'])) {
 				
 			case "T":
 				# read program's title
-				$program['info']['title']=substr($line,2,strlen($line)-3);
+				$program['info']['title']=mb_substr($line,2,mb_strlen($line)-3);
 				# search for matching string in title
 				foreach ($config['title'] as $search) {
 					# skip empty strings (these are place-holders in config file)
-					if (strlen($search)>0 && !(stripos($program['info']['title'],$search) === false)) {
+					if (mb_strlen($search)>0 && !(stripos($program['info']['title'],$search) === false)) {
                                                 $hit=true;
 						foreach ($config['notitle'] as $nosearch) {
-						        if (strlen($nosearch)>0 && !(stripos($program['info']['title'],$nosearch) === false)) {
+						        if (mb_strlen($nosearch)>0 && !(stripos($program['info']['title'],$nosearch) === false)) {
 						                $hit=false;
                                                         }
                                                 }
@@ -157,7 +157,7 @@ if (file_exists($config['global']['epgfile'])) {
 	        				        $program['match']['hitT']=$search;
                                                 }
 					}
-					if (strlen($search)>0 && strcasecmp($program['info']['title'],$search) == 0) {
+					if (mb_strlen($search)>0 && strcasecmp($program['info']['title'],$search) == 0) {
 					        $hit=true;
 					        if ($hit==true) {
 					                $program['match']['hitTExact']=$search;
@@ -168,11 +168,11 @@ if (file_exists($config['global']['epgfile'])) {
 				
 			case "S":
 				# read program's short description
-				$program['info']['short']=substr($line,2,strlen($line)-3);
+				$program['info']['short']=mb_substr($line,2,mb_strlen($line)-3);
 				# search for matching string in short description
 				foreach ($config['shortText'] as $search) {
 					# skip empty strings (these are place-holders in config file)
-					if (strlen($search)>0) {
+					if (mb_strlen($search)>0) {
 						if (!(stripos($program['info']['short'],$search) === false)){
 							$hit=true;
 							$program['match']['hitS']=$search;
@@ -183,11 +183,11 @@ if (file_exists($config['global']['epgfile'])) {
 				
 			case "D":
 				# read programs's description
-				$program['info']['description']=substr($line,2,strlen($line)-3);
+				$program['info']['description']=mb_substr($line,2,mb_strlen($line)-3);
 				# search for matching string in  description
 				foreach ($config['description'] as $search) {
 					# skip empty strings (these are place-holders in config file)
-					if (strlen($search)>0) {
+					if (mb_strlen($search)>0) {
 						if (!(stripos($program['info']['description'],$search) === false)){
 							$hit=true;
 							$program['match']['hitD']=$search;
@@ -197,15 +197,15 @@ if (file_exists($config['global']['epgfile'])) {
 				break;
                         case "G":
                                 # space separated list of up to four integers according to ETSI EN 300 468
-                                $program['info']['genre']=explode(" ",substr($line,2,strlen($line)-3));
+                                $program['info']['genre']=explode(" ",mb_substr($line,2,mb_strlen($line)-3));
                                 break; 
                         case "X": 
                                 # description of streams, can occur more than ones
-				$program['streams'][]=substr($line,2,strlen($line)-3);
+				$program['streams'][]=mb_substr($line,2,mb_strlen($line)-3);
 				break;
                         case "V": 
                                 # VPS time in UTC
-                                $program['channel']['VPS']=substr($line,2,strlen($line)-3);
+                                $program['channel']['VPS']=mb_substr($line,2,mb_strlen($line)-3);
                                 break;
 			case "e":
 				# end of currently processed program 
