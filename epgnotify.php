@@ -20,7 +20,7 @@ function readConfig(){
 	# read user config file
 	if (!file_exists(getenv('HOME')."/.epgnotify.ini")) {
 		# if file does not exists: write a new one
-		$file=fopen(getenv('HOME')."/.epgnotify.ini",'w');
+		$file=fopen(getenv('HOME')."/.epgnotify.ini",'w+');
 		fwrite($file,"; file should be encoded in UTF-8 (same as for epg.data)\n");
 		fwrite($file,"[searchStrings]\n");
 		fwrite($file,";title[]=\"Pulp Fiction\"\n");
@@ -60,15 +60,28 @@ function readConfig(){
         	# charset="UTF-8"
 		$config_global['global']=parse_ini_file("/etc/epgnotify/global.ini");
 	}
-	if (!isset($config_global['global']['epgfile'])) {
+	if (!isset($config_global) || !array_key_exists('epgfile',$config_global['global']) ) {
 		$config_global['global']['epgfile']="/var/cache/vdr/epg.data";
 	}
-	if (!isset($config_global['global']['charset'])) {
+	
+	if (!array_key_exists('charset',$config_global['global'])) {
 	        $config_global['global']['charset']="UTF-8";
 	}
-		
+#	echo("config_global");					
+#       print_r($config_global);
+        
+#	echo("config_+");					
+#       print_r($config_user+$config_global);
+        
+#	echo("config_merge");
+#       print_r(array_merge($config_user,$config_global));
+        
 	# merge both configs
-	return array_merge($config_global,$config_user);
+#	echo("config_merge2");
+#	print_r(array_merge($config_global,$config_user));
+	
+	return array_merge($config_user,$config_global);
+
 
 }
 
@@ -77,8 +90,8 @@ function readConfig(){
 # read config from files
 $config=readConfig();
 
-# set correct local timezone
-if (isset($config['global']['timezone'])){
+# set correct local timezone according to config
+if (array_key_exists('timezone',$config['global'])){
         date_default_timezone_set($config['global']['timezone']);
 }
 
