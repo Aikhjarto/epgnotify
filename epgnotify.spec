@@ -25,7 +25,8 @@ Source2:        README.md
 Url:            https://github.com/Aikhjarto/epgnotify
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 BuildArch:      noarch
-Requires:       php
+Requires:       php >= 5.2
+Requires:       php(mb-string)
 Recommends:     vdr
 Recommends:     vdradmin-am, cron
 
@@ -58,6 +59,4 @@ ln -sf /usr/bin/epgnotify.php %{buildroot}%{_sysconfdir}/cron.daily/epgnotify.ph
 %{_sysconfdir}/cron.daily/epgnotify.php
 
 %changelog
-* Fri Nov 29 2013 Wagner Thomas <wagner-thomas@gmx.at> - 0-0.2
-- Created RPM for the first time
 
