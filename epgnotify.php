@@ -105,15 +105,16 @@ if (file_exists(getenv('HOME')."/.epgnotify.cache")) {
 	$cache = array();
 }
 
+$tmp_epgfile="/tmp/epgdata_".get_current_user()."tmp";
 # get epg data either from local epg file or from VDR plugin svdrp
 if (file_exists($config['global']['epgfile'])) {
-        copy($config['global']['epgfile'],"/tmp/epgdata.tmp");
+        copy($config['global']['epgfile'],$tmp_epgfile);
 } else {
         $fp = fsockopen("linux.private.lan", 6419, $errno, $errstr, 30);
         if (!$fp) {
             	echo "$errstr ($errno)\n";
             } else {
-	            $fw=fopen("/tmp/epgdata.tmp","w");
+	            $fw=fopen($tmp_epgfile,"w");
 	            $out = "LSTE\n";
 	            $out .= "QUIT\n";
 	            fwrite($fp, $out);
@@ -132,9 +133,9 @@ if (file_exists($config['global']['epgfile'])) {
 # read and process egpfile if exists
 # TODO: check if epg data is out of date or even not present
 # outdate data can be checked storing the highest date of broadcast while iterating over the file. If i lies in the past, egpdata is outdated. If its empty, we got not epg data.
-if (file_exists("/tmp/epgdata.tmp")) {
+if (file_exists($tmp_epgfile)) {
 	# open epg database from vdr
-	$file=fopen("/tmp/epgdata.tmp","r");
+	$file=fopen($tmp_epgfile,"r");
 
 	$hit=false; # helper variable; indicates if currently processed program is noteworthy to store
 	$eventIDCount=0; # counter for found event IDs in epg data
