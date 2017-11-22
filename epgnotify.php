@@ -108,7 +108,7 @@ if (file_exists(getenv('HOME')."/.epgnotify.cache")) {
 	$cache = array();
 }
 
-$tmp_epgfile="/tmp/epgdata_".get_current_user().".tmp";
+$tmp_epgfile="/tmp/epgdata_".posix_geteuid().".tmp";
 # get epg data either from local epg file or from VDR plugin svdrp
 if (file_exists($config['global']['epgfile'])) {
         copy($config['global']['epgfile'],$tmp_epgfile);
@@ -386,22 +386,24 @@ if (file_exists($tmp_epgfile)) {
 	}
 
 	# purge cache (loop every program in cache of sent notifications and remove that ones that are not in the epg data any more)
-	for ($i=0; $i<count($cache); $i++) {
-		$found=false;
-		foreach ($eventID as $evtID) {
-			if ($cache[$i]['info']['eventID']==$evtID){
-				$found=true;
-				break;
+	if (isset($eventID)) {
+		for ($i=0; $i<count($cache); $i++) {
+			$found=false;
+			foreach ($eventID as $evtID) {
+				if ($cache[$i]['info']['eventID']==$evtID){
+					$found=true;
+					break;
+				}
+			}
+			if (!$found) {
+				unset($cache[$i]);
 			}
 		}
-		if (!$found) {
-			unset($cache[$i]);
-		}
+		# reduce indices (not leave an empty index back)
+		$cache=array_merge($cache); 
+		# save cache
+		file_put_contents(getenv('HOME')."/.epgnotify.cache",serialize($cache));
 	}
-	# reduce indices (not leave an empty index back)
-	$cache=array_merge($cache); 
-	# save cache
-	file_put_contents(getenv('HOME')."/.epgnotify.cache",serialize($cache));
 
 } else {
   # write a mail if epg.file does not exists
